@@ -6,6 +6,7 @@ import com.hmall.common.exception.BizIllegalException;
 import com.hmall.common.exception.ForbiddenException;
 import com.hmall.common.utils.UserContext;
 //import com.hmall.config.JwtProperties;
+import com.hmall.user.config.JwtProperties;
 import com.hmall.user.domain.dto.LoginFormDTO;
 import com.hmall.user.domain.po.User;
 import com.hmall.user.domain.vo.UserLoginVO;
@@ -13,6 +14,7 @@ import com.hmall.user.enums.UserStatus;
 import com.hmall.user.mapper.UserMapper;
 import com.hmall.user.service.IUserService;
 //import com.hmall.utils.JwtTool;
+import com.hmall.user.utils.JwtTool;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,9 +35,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     private final PasswordEncoder passwordEncoder;
 
-//    private final JwtTool jwtTool;
+    private final JwtTool jwtTool;
 
-//    private final JwtProperties jwtProperties;
+    private final JwtProperties jwtProperties;
 
     @Override
     public UserLoginVO login(LoginFormDTO loginDTO) {
@@ -54,13 +56,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BadRequestException("用户名或密码错误");
         }
         // 5.生成TOKEN
-//        String token = jwtTool.createToken(user.getId(), jwtProperties.getTokenTTL());
+        String token = jwtTool.createToken(user.getId(), jwtProperties.getTokenTTL());
         // 6.封装VO返回
         UserLoginVO vo = new UserLoginVO();
         vo.setUserId(user.getId());
         vo.setUsername(user.getUsername());
         vo.setBalance(user.getBalance());
-//        vo.setToken(token);
+        vo.setToken(token);
         return vo;
     }
 

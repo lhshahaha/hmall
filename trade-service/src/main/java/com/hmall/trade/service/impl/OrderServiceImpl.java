@@ -1,18 +1,18 @@
-package com.hmall.order.service.impl;
+package com.hmall.trade.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmall.api.client.CartClient;
+import com.hmall.api.dto.ItemDTO;
+import com.hmall.api.client.ItemClient;
+import com.hmall.api.dto.OrderDetailDTO;
 import com.hmall.common.exception.BadRequestException;
 import com.hmall.common.utils.UserContext;
-import com.hmall.domain.dto.ItemDTO;
-import com.hmall.domain.dto.OrderDetailDTO;
-import com.hmall.domain.dto.OrderFormDTO;
-import com.hmall.domain.po.Order;
-import com.hmall.domain.po.OrderDetail;
-import com.hmall.mapper.OrderMapper;
-import com.hmall.service.ICartService;
-import com.hmall.service.IItemService;
-import com.hmall.service.IOrderDetailService;
-import com.hmall.service.IOrderService;
+import com.hmall.trade.domain.dto.OrderFormDTO;
+import com.hmall.trade.domain.po.Order;
+import com.hmall.trade.domain.po.OrderDetail;
+import com.hmall.trade.mapper.OrderMapper;
+import com.hmall.trade.service.IOrderDetailService;
+import com.hmall.trade.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,10 +36,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
-    private final IItemService itemService;
     private final IOrderDetailService detailService;
-    private final ICartService cartService;
-
+    private final ItemClient itemClient;
+    private final CartClient cartClient;
     @Override
     @Transactional
     public Long createOrder(OrderFormDTO orderFormDTO) {
@@ -52,7 +51,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .collect(Collectors.toMap(OrderDetailDTO::getItemId, OrderDetailDTO::getNum));
         Set<Long> itemIds = itemNumMap.keySet();
         // 1.3.查询商品
-        List<ItemDTO> items = itemService.queryItemByIds(itemIds);
+        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
         if (items == null || items.size() < itemIds.size()) {
             throw new BadRequestException("商品不存在");
         }
@@ -74,11 +73,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         detailService.saveBatch(details);
 
         // 3.清理购物车商品
-        cartService.removeByItemIds(itemIds);
+        cartClient.deleteCartItemByIds(itemIds);
 
         // 4.扣减库存
         try {
-            itemService.deductStock(detailDTOS);
+            itemClient.deductStock(detailDTOS);
         } catch (Exception e) {
             throw new RuntimeException("库存不足！");
         }

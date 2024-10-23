@@ -1,4 +1,4 @@
-package com.hmall.order.domain.po;
+package com.hmall.api.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

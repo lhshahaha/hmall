@@ -1,4 +1,4 @@
-package com.hmall.pay;
+package com.hmall.trade;
 
 import com.hmall.api.config.DefaultFeignConfig;
 import org.mybatis.spring.annotation.MapperScan;
@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableFeignClients(basePackages = "com.hmall.api.client",defaultConfiguration = DefaultFeignConfig.class)
-@MapperScan("com.hmall.pay.mapper")
+@MapperScan("com.hmall.trade.mapper")
 @SpringBootApplication
-public class PayApplication {
+public class TradeApplication {
     public static void main(String[] args) {
-        SpringApplication.run(PayApplication.class, args);
+        SpringApplication.run(TradeApplication.class, args);
     }
 }
