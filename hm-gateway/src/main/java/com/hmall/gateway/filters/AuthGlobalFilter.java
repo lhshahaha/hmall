@@ -49,11 +49,13 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
-        return chain.filter(exchange);
+        String userInfo=userId.toString();
+        ServerWebExchange swe = exchange.mutate().request(builder -> builder.header("user-info", userInfo)).build();
+        return chain.filter(swe);
     }
 
     private boolean isExclude(String path) {
-        for (String pathPattern : authProperties.getExcludePaths()) {
+        for (String pathPattern :  authProperties.getExcludePaths()) {
             if (antPathMatcher.match(pathPattern,path)) {
                 return true;
             }

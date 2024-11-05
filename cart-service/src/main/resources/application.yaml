@@ -45,4 +45,10 @@ knife4j:
 feign:
   okhttp:
     enabled: true
+hm:
+  db:
+    database: hm-cart
+    swagger:
+      title: "黑马商城购物车服务接口文档"
+      packege: com.hmall.cart.controller
 # keytool -genkeypair -alias hmall -keyalg RSA -keypass hmall123 -keystore hmall.jks -storepass hmall123
